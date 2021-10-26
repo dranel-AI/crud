@@ -28,7 +28,7 @@ const editIconEventCallback = async function () {
         const text = parent.firstElementChild.innerText
         const newText = prompt('edit:', text)
 
-        if (newText !== '') {
+        if (newText !== '' && newText !== null && newText !== text) {
             await fetch(`/update/${id}`, {
                 method: 'PUT',
                 headers: {
@@ -36,9 +36,8 @@ const editIconEventCallback = async function () {
                 },
                 body: JSON.stringify({ text: newText }),
             })
+            window.location.reload(true)
         }
-
-        window.location.reload(true)
     } catch (error) {
         console.log(error)
     }
