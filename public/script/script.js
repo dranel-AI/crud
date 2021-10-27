@@ -105,7 +105,7 @@ const editIconEventCallback = async function () {
         let parent = this.parentNode.parentNode
         let id = parent.dataset.id
         let text = parent.children[1].innerText
-        let promptText = prompt('edit:', text)
+        let promptText = prompt('edit:', text) || ''
 
         // FILTER HTML TAGS
         let newText = [...promptText]
