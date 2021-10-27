@@ -102,8 +102,8 @@ todoForm.addEventListener('submit', createEventCallback)
 
 const editIconEventCallback = async function () {
     try {
-        const parent = this.parentNode.parentNode
-        const id = parent.dataset.id
+        let parent = this.parentNode.parentNode
+        let id = parent.dataset.id
         let text = parent.children[1].innerText
         let promptText = prompt('edit:', text)
 
