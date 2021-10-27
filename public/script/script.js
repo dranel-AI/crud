@@ -1,4 +1,3 @@
-const todoInput = document.querySelector('.todo-input')
 const todoForm = document.querySelector('.todo-form')
 
 const fetchTodos = async () => {
@@ -10,13 +9,11 @@ const fetchTodos = async () => {
 
         if (todolist.length === 0) {
             todolistDiv.innerHTML =
-                '<tr><th scope="row" colspan="3">your todolist is empty</th></tr>'
+                '<tr><th scope="row" colspan="3" class="bg-secondary">your todolist is empty</th></tr>'
         } else {
             let collections = ''
 
-            for (let index in todolist) {
-                const todo = todolist[index]
-
+            for (let [index, todo] of Object.entries(todolist)) {
                 collections += `<tr data-id="${todo._id}">
                     <th scope="row">${++index}</th>
                     <td>${todo.text}</td>
@@ -66,10 +63,19 @@ const alertBoxCallback = (result) => {
     }, 1500)
 }
 
-const createEventCallback = async (e) => {
+const createEventCallback = async function (e) {
     try {
         e.preventDefault()
-        const text = todoInput.value
+        // FILTER HTML TAGS
+        const text = [...this.text.value]
+            .map(function (e) {
+                const obj = {
+                    '<': '&lt;',
+                    '>': '&gt;',
+                }
+                return obj[e] ? obj[e] : e
+            })
+            .join('')
 
         const response = await fetch('/create', {
             method: 'POST',
@@ -80,12 +86,13 @@ const createEventCallback = async (e) => {
         })
 
         const result = await response.json()
+        const status = response.status
 
         await fetchTodos()
         addEventOnIcons()
-        alertBoxCallback(result)
+        alertBoxCallback({ status, ...result })
 
-        todoInput.value = ''
+        this.text.value = ''
     } catch (error) {
         alertBoxCallback(error)
     }
@@ -98,7 +105,18 @@ const editIconEventCallback = async function () {
         const parent = this.parentNode.parentNode
         const id = parent.dataset.id
         const text = parent.children[1].innerText
-        const newText = prompt('edit:', text)
+        let promptText = prompt('edit:', text)
+
+        // FILTER HTML TAGS
+        const newText = [...promptText]
+            .map(function (e) {
+                const obj = {
+                    '<': '&lt;',
+                    '>': '&gt;',
+                }
+                return obj[e] ? obj[e] : e
+            })
+            .join('')
 
         if (newText === '' || newText === null || newText === text) {
             throw Error('Invalid input! Field Cannot be Updated')
@@ -113,12 +131,13 @@ const editIconEventCallback = async function () {
         })
 
         const result = await response.json()
+        const status = response.status
 
         await fetchTodos()
         addEventOnIcons()
-        alertBoxCallback(result)
+        alertBoxCallback({ status, ...result })
     } catch (error) {
-        alertBoxCallback({ status: 500, message: error })
+        alertBoxCallback(error)
     }
 }
 
@@ -130,11 +149,13 @@ const removeIconEventCallback = async function () {
         const response = await fetch(`/delete/${id}`, {
             method: 'DELETE',
         })
+
         const result = await response.json()
+        const status = response.status
 
         await fetchTodos()
         addEventOnIcons()
-        alertBoxCallback(result)
+        alertBoxCallback({ status, ...result })
     } catch (error) {
         alertBoxCallback(error)
     }
