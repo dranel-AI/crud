@@ -15,6 +15,7 @@
             <input type="text" class="form-control todo-input" placeholder="Enter todo's" aria-label="Enter todo's" aria-describedby="button-addon2">
             <button class="btn btn-outline-secondary todo-save-button" type="button" id="button-addon2">Save</button>
         </div>
+        <div class="alert-box"></div>
         <% for (const todo of doc) { %>
         <div class="row m-auto g-2" data-id="<%= todo._id %>">
             <div class="col-9 border-bottom border-secondary border-1">

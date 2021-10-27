@@ -1,11 +1,26 @@
 const todoInput = document.querySelector('.todo-input')
 const todoSaveButton = document.querySelector('.todo-save-button')
 
+const alertBoxCallback = (result) => {
+    const alertBox = document.querySelector('.alert-box')
+    const { status, message, doc } = result
+
+    if (status === 200) {
+        div = `<div class='alert alert-success' role="alert">${
+            doc.text || ''
+        }  ${message}</div>`
+    } else {
+        div = `<div class='alert alert-success' role="alert">${message}'</div>`
+    }
+
+    alertBox.innerHTML = div
+}
+
 const createEventCallback = async () => {
     try {
         const text = todoInput.value
 
-        await fetch('/create', {
+        const response = await fetch('/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
@@ -13,9 +28,14 @@ const createEventCallback = async () => {
             body: JSON.stringify({ text }),
         })
 
-        window.location.reload(true)
+        const result = await response.json()
+        alertBoxCallback(result)
+
+        setTimeout(() => {
+            window.location.reload(true)
+        }, 1500)
     } catch (error) {
-        console.log(error)
+        alertBoxCallback(error)
     }
 }
 
@@ -29,17 +49,22 @@ const editIconEventCallback = async function () {
         const newText = prompt('edit:', text)
 
         if (newText !== '' && newText !== null && newText !== text) {
-            await fetch(`/update/${id}`, {
+            const response = await fetch(`/update/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
                 },
                 body: JSON.stringify({ text: newText }),
             })
-            window.location.reload(true)
+            const result = await response.json()
+            alertBoxCallback(result)
+
+            setTimeout(() => {
+                window.location.reload(true)
+            }, 1500)
         }
     } catch (error) {
-        console.log(error)
+        alertBoxCallback(error)
     }
 }
 
@@ -48,13 +73,18 @@ const removeIconEventCallback = async function () {
         const parent = this.parentNode.parentNode
         const id = parent.dataset.id
 
-        await fetch(`/delete/${id}`, {
+        const response = await fetch(`/delete/${id}`, {
             method: 'DELETE',
         })
+        const result = await response.json()
+        alertBoxCallback(result)
 
-        window.location.reload(true)
+        setTimeout(() => {
+            window.location.reload(true)
+        }, 1500)
+        console.log(result)
     } catch (error) {
-        console.log(error)
+        alertBoxCallback(error)
     }
 }
 
