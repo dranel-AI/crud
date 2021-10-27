@@ -108,7 +108,7 @@ const editIconEventCallback = async function () {
         let promptText = prompt('edit:', text)
 
         // FILTER HTML TAGS
-        const newText = [...promptText]
+        let newText = [...promptText]
             .map(function (e) {
                 const obj = {
                     '<': '&lt;',
