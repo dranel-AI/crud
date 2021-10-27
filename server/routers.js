@@ -1,14 +1,9 @@
 const express = require('express')
+const path = require('path')
 const router = express.Router()
 
-router.get('/', async (req, res) => {
-    try {
-        const todoModel = await require('./database')
-        const doc = await todoModel.find()
-        res.status(200).render('index', { doc })
-    } catch (error) {
-        res.status(500).json(error)
-    }
+router.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '/index.html'))
 })
 
 router.post('/create', async (req, res) => {
@@ -22,6 +17,16 @@ router.post('/create', async (req, res) => {
             message: 'successfully added!',
             doc,
         })
+    } catch (error) {
+        res.status(500).json({ status: 500, message: error.message })
+    }
+})
+
+router.get('/read', async (req, res) => {
+    try {
+        const todoModel = await require('./database')
+        const doc = await todoModel.find()
+        res.status(200).json(doc)
     } catch (error) {
         res.status(500).json({ status: 500, message: error.message })
     }

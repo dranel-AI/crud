@@ -1,7 +1,51 @@
 const todoInput = document.querySelector('.todo-input')
 const todoSaveButton = document.querySelector('.todo-save-button')
 
-const alertAndReloadWindow = (result) => {
+const fetchTodos = async () => {
+    try {
+        const response = await fetch('/read')
+        const todolist = await response.json()
+
+        const todolistDiv = document.querySelector('.todolist')
+
+        if (todolist.length === 0) {
+            todolistDiv.innerHTML = 'your todolist is empty'
+        } else {
+            let collections = ''
+
+            for (const todo of todolist) {
+                collections += `<div class="row m-auto g-2" data-id="${todo._id}">
+                    <div class="col-9 border-bottom border-secondary border-1">
+                        ${todo.text}
+                    </div>
+                    <div class="col bg-secondary text-white d-flex justify-content-center p-1">
+                        <i class="fa fa-pencil-square-o edit m-1"></i>
+                        <i class="fa fa-trash-o remove m-1"></i>
+                    </div>
+                </div>`
+            }
+
+            todolistDiv.innerHTML = collections
+        }
+    } catch (error) {
+        alertAndReloadWindow(error)
+    }
+}
+
+const addEventOnIcons = () => {
+    const editIcons = document.querySelectorAll('.edit')
+    const removeIcons = document.querySelectorAll('.remove')
+
+    for (const editIcon of editIcons) {
+        editIcon.addEventListener('click', editIconEventCallback)
+    }
+
+    for (const removeIcon of removeIcons) {
+        removeIcon.addEventListener('click', removeIconEventCallback)
+    }
+}
+
+const alertBoxCallback = (result) => {
     const alertBox = document.querySelector('.alert-box')
     const { status, message, doc } = result
     let div = ''
@@ -17,7 +61,7 @@ const alertAndReloadWindow = (result) => {
     alertBox.innerHTML = div
 
     setTimeout(() => {
-        window.location.reload(true)
+        alertBox.innerHTML = ''
     }, 1500)
 }
 
@@ -34,9 +78,14 @@ const createEventCallback = async () => {
         })
 
         const result = await response.json()
-        alertAndReloadWindow(result)
+
+        await fetchTodos()
+        addEventOnIcons()
+        alertBoxCallback(result)
+
+        todoInput.value = ''
     } catch (error) {
-        alertAndReloadWindow(error)
+        alertBoxCallback(error)
     }
 }
 
@@ -62,9 +111,12 @@ const editIconEventCallback = async function () {
         })
 
         const result = await response.json()
-        alertAndReloadWindow(result)
+
+        await fetchTodos()
+        addEventOnIcons()
+        alertBoxCallback(result)
     } catch (error) {
-        alertAndReloadWindow({ status: 500, message: error })
+        alertBoxCallback({ status: 500, message: error })
     }
 }
 
@@ -77,23 +129,25 @@ const removeIconEventCallback = async function () {
             method: 'DELETE',
         })
         const result = await response.json()
-        alertAndReloadWindow(result)
+
+        await fetchTodos()
+        addEventOnIcons()
+        alertBoxCallback(result)
     } catch (error) {
-        alertAndReloadWindow(error)
+        alertBoxCallback(error)
     }
 }
 
-const addEventOnIcons = () => {
-    const editIcons = document.querySelectorAll('.edit')
-    const removeIcons = document.querySelectorAll('.remove')
-
-    for (const editIcon of editIcons) {
-        editIcon.addEventListener('click', editIconEventCallback)
-    }
-
-    for (const removeIcon of removeIcons) {
-        removeIcon.addEventListener('click', removeIconEventCallback)
+/**
+ *
+ * fetch todos and add event in icons
+ */
+const callback = async () => {
+    try {
+        await fetchTodos()
+        addEventOnIcons()
+    } catch (error) {
+        alertBoxCallback(error)
     }
 }
-
-addEventOnIcons()
+callback()

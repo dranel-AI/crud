@@ -9,9 +9,6 @@ app.set('json spaces', 2)
 //static folder
 app.use(express.static('public'))
 
-// view engine
-app.set('view engine', 'ejs')
-
 // routers
 const routers = require('./routers')
 app.use(routers)
