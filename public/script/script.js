@@ -10,7 +10,7 @@ const alertAndReloadWindow = (result) => {
             doc.text || ''
         }  ${message}</div>`
     } else {
-        div = `<div class='alert alert-success' role="alert">${message}'</div>`
+        div = `<div class='alert alert-danger' role="alert">${message}</div>`
     }
 
     alertBox.innerHTML = div
@@ -48,19 +48,22 @@ const editIconEventCallback = async function () {
         const text = parent.firstElementChild.innerText
         const newText = prompt('edit:', text)
 
-        if (newText !== '' && newText !== null && newText !== text) {
-            const response = await fetch(`/update/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8',
-                },
-                body: JSON.stringify({ text: newText }),
-            })
-            const result = await response.json()
-            alertAndReloadWindow(result)
+        if (newText === '' || newText === null || newText === text) {
+            throw Error('Invalid input! Field Cannot be Updated')
         }
+
+        const response = await fetch(`/update/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+            },
+            body: JSON.stringify({ text: newText }),
+        })
+
+        const result = await response.json()
+        alertAndReloadWindow(result)
     } catch (error) {
-        alertAndReloadWindow(error)
+        alertAndReloadWindow({ status: 500, message: error })
     }
 }
 
