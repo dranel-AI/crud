@@ -1,5 +1,5 @@
 const todoInput = document.querySelector('.todo-input')
-const todoSaveButton = document.querySelector('.todo-save-button')
+const todoForm = document.querySelector('.todo-form')
 
 const fetchTodos = async () => {
     try {
@@ -9,26 +9,27 @@ const fetchTodos = async () => {
         const todolistDiv = document.querySelector('.todolist')
 
         if (todolist.length === 0) {
-            todolistDiv.innerHTML = 'your todolist is empty'
+            todolistDiv.innerHTML =
+                '<tr><th scope="row" colspan="3">your todolist is empty</th></tr>'
         } else {
             let collections = ''
 
-            for (const todo of todolist) {
-                collections += `<div class="row m-auto g-2" data-id="${todo._id}">
-                    <div class="col-9 border-bottom border-secondary border-1">
-                        ${todo.text}
-                    </div>
-                    <div class="col bg-secondary text-white d-flex justify-content-center p-1">
-                        <i class="fa fa-pencil-square-o edit m-1"></i>
-                        <i class="fa fa-trash-o remove m-1"></i>
-                    </div>
-                </div>`
-            }
+            for (let index in todolist) {
+                const todo = todolist[index]
 
+                collections += `<tr data-id="${todo._id}">
+                    <th scope="row">${++index}</th>
+                    <td>${todo.text}</td>
+                    <td>
+                        <i class="fa fa-pencil-square-o edit"></i>
+                        <i class="fa fa-trash-o remove"></i>
+                    </td>
+                </tr>`
+            }
             todolistDiv.innerHTML = collections
         }
     } catch (error) {
-        alertAndReloadWindow(error)
+        alertBoxCallback(error)
     }
 }
 
@@ -65,8 +66,9 @@ const alertBoxCallback = (result) => {
     }, 1500)
 }
 
-const createEventCallback = async () => {
+const createEventCallback = async (e) => {
     try {
+        e.preventDefault()
         const text = todoInput.value
 
         const response = await fetch('/create', {
@@ -89,13 +91,13 @@ const createEventCallback = async () => {
     }
 }
 
-todoSaveButton.addEventListener('click', createEventCallback)
+todoForm.addEventListener('submit', createEventCallback)
 
 const editIconEventCallback = async function () {
     try {
         const parent = this.parentNode.parentNode
         const id = parent.dataset.id
-        const text = parent.firstElementChild.innerText
+        const text = parent.children[1].innerText
         const newText = prompt('edit:', text)
 
         if (newText === '' || newText === null || newText === text) {
