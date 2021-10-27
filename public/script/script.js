@@ -1,7 +1,7 @@
 const todoInput = document.querySelector('.todo-input')
 const todoSaveButton = document.querySelector('.todo-save-button')
 
-const alertBoxCallback = (result) => {
+const alertAndReloadWindow = (result) => {
     const alertBox = document.querySelector('.alert-box')
     const { status, message, doc } = result
 
@@ -14,6 +14,10 @@ const alertBoxCallback = (result) => {
     }
 
     alertBox.innerHTML = div
+
+    setTimeout(() => {
+        window.location.reload(true)
+    }, 1500)
 }
 
 const createEventCallback = async () => {
@@ -29,13 +33,9 @@ const createEventCallback = async () => {
         })
 
         const result = await response.json()
-        alertBoxCallback(result)
-
-        setTimeout(() => {
-            window.location.reload(true)
-        }, 1500)
+        alertAndReloadWindow(result)
     } catch (error) {
-        alertBoxCallback(error)
+        alertAndReloadWindow(error)
     }
 }
 
@@ -57,14 +57,10 @@ const editIconEventCallback = async function () {
                 body: JSON.stringify({ text: newText }),
             })
             const result = await response.json()
-            alertBoxCallback(result)
-
-            setTimeout(() => {
-                window.location.reload(true)
-            }, 1500)
+            alertAndReloadWindow(result)
         }
     } catch (error) {
-        alertBoxCallback(error)
+        alertAndReloadWindow(error)
     }
 }
 
@@ -77,14 +73,9 @@ const removeIconEventCallback = async function () {
             method: 'DELETE',
         })
         const result = await response.json()
-        alertBoxCallback(result)
-
-        setTimeout(() => {
-            window.location.reload(true)
-        }, 1500)
-        console.log(result)
+        alertAndReloadWindow(result)
     } catch (error) {
-        alertBoxCallback(error)
+        alertAndReloadWindow(error)
     }
 }
 
