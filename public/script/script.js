@@ -4,6 +4,7 @@ const todoSaveButton = document.querySelector('.todo-save-button')
 const alertAndReloadWindow = (result) => {
     const alertBox = document.querySelector('.alert-box')
     const { status, message, doc } = result
+    let div = ''
 
     if (status === 200) {
         div = `<div class='alert alert-success' role="alert">${
