@@ -118,7 +118,7 @@ const editIconEventCallback = async function () {
             })
             .join('')
 
-        if (newText === '' || newText === null || promptText === text) {
+        if (promptText === '' || promptText === text) {
             throw Error('Invalid input! Field Cannot be Updated')
         }
 
