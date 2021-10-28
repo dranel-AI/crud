@@ -107,6 +107,10 @@ const editIconEventCallback = async function () {
         let text = parent.children[1].innerText
         let promptText = prompt('edit:', text) || ''
 
+        if (promptText === '' || promptText === text) {
+            throw Error('Invalid input! Field Cannot be Updated')
+        }
+
         // FILTER HTML TAGS
         let newText = [...promptText]
             .map(function (e) {
@@ -117,10 +121,6 @@ const editIconEventCallback = async function () {
                 return obj[e] ? obj[e] : e
             })
             .join('')
-
-        if (promptText === '' || promptText === text) {
-            throw Error('Invalid input! Field Cannot be Updated')
-        }
 
         const response = await fetch(`/update/${id}`, {
             method: 'PUT',
